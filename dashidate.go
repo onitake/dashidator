@@ -3,11 +3,12 @@ package main
 import (
 	"os"
 	"fmt"
-	"github.com/onitake/dashidator"
+	"encoding/json"
+	"github.com/onitake/dashidator/manifest"
 )
 
 func main() {
-	filename string
+	var filename string
 	if len(os.Args) > 1 {
 		filename = os.Args[1]
 	} else {
@@ -16,15 +17,16 @@ func main() {
 
 	file, err := os.Open(filename)
 	if err != nil {
-		fmt.Printf("Can't open manifest.mpd: %s\n", err)
+		fmt.Printf("Error %s\n", err)
 		os.Exit(1)
 	}
 
-	mpd, err := ReadMpd(nil)
+	mpd, err := manifest.ReadMpd(file)
 	if err != nil {
-		fmt.Printf("Error reading manifest: %s\n", err)
+		fmt.Printf("Error %s\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(mpd)
+	js, _ := json.MarshalIndent(mpd, "", "  ")
+	fmt.Println(string(js))
 }
